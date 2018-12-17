@@ -367,6 +367,8 @@ elif opt.ifo == 'H1' or opt.ifo == 'L1':
     from bruco.ligodata import *
 elif opt.ifo == 'V1':
     from bruco.virgodata import *
+elif opt.ifo == 'K1':
+    from bruco.kagradata import *
 else:
     print "Unknown IFO %s" % opt.ifo
     exit()
