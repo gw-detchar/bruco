@@ -402,20 +402,28 @@ sample_rate = sample_rate[idx]
 f = open(exc, 'r')
 L = f.readlines()
 excluded = []
+
 for c in L:
     c = c.split()[0]
     excluded.append(c)
 f.close()
 
 # delete excluded channels, allowing for unix-shell-like wildcards
-idx = ones(shape(channels), dtype='bool')
+if exclude:
+    idx = ones(shape(channels), dtype='bool')
+else:
+    idx = zeros(shape(channels), dtype='bool')
+
 for c,i in zip(channels, arange(len(channels))):
     if c == opt.ifo + ':' + opt.channel:
-	# remove the main channel
-	idx[i] = False
+       # remove the main channel
+       idx[i] = False
     for e in excluded:
         if fnmatch.fnmatch(c, opt.ifo + ':' + e):
-            idx[i] = False
+            if exclude:
+                idx[i] = False
+            else:
+                idx[i] = True
 
 channels = channels[idx]
 
