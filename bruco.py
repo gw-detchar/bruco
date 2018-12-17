@@ -5,7 +5,7 @@ Brute force coherence (Gabriele Vajente, 2017-05-25)
 
 Command line arguments (with default values)
 
---ifo                                     interferometer prefix [H1, L1, V1] 
+--ifo                                     interferometer prefix [H1, L1, V1, K1]
                                           (no default, must specify)
 
 --channel=OAF-CAL_DARM_DQ                 name of the main channel
@@ -18,6 +18,9 @@ Command line arguments (with default values)
 					  the specified time duration
 
 --excluded=bruco_excluded_channels.txt    file containing the list of channels excluded 
+
+--included=bruco_included_channels.txt    file containing the list of channels included
+
                                           from the coherence computation
 
 --gpsb=1087975458                         starting time
@@ -323,6 +326,10 @@ parser.add_option("-e", "--excluded", dest="excluded",
                   default='',
                   help="list of channels excluded from the coherence computation", 
                                                                     metavar="Excluded")
+parser.add_option("-I", "--included", dest="included",
+                  default='',
+                  help="list of channels included from the coherence computation",
+                                                                    metavar="Included")
 parser.add_option("-T", "--tmp", dest="scratchdir",
                   default=scratchdir,
                   help="temporary file directory", metavar="Tmp")
@@ -352,6 +359,12 @@ else:
 # parse list of excluded channels. If not specified use default
 if opt.excluded != '':
     exc = opt.excluded
+    exclude = True
+
+# parse list of include channels. If not specified use default
+if opt.included != '':
+    exc = opt.included
+    exclude = False
     
 ###### Prepare folders and stuff for the processing loops ################################
 
