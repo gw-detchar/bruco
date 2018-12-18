@@ -21,7 +21,9 @@ files = []
 
 # wrapper around the LIGO function to find where data is, returns a list of files
 def find_data_path(observatory, gpsb, gpse):
-    pref = '/frame0/full'
+    pref = os.getenv('GW_FRAME_DIR', '/frame0') + '/full'
+    if not os.path.exist(pref):
+        pref = '/data/full'
     flen = int(32)
     gstt = int(int(gpsb / flen) * flen)
     gstp = int(int((gpse-0.5) / flen) * flen)
