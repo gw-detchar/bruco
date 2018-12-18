@@ -42,8 +42,9 @@ def find_data_path(observatory, gpsb, gpse):
 def get_channel_list(opt, gpsb):
     
     files0 = find_data_path(opt.ifo, gpsb, gpsb+1) 
-    os.system('/users/tyamamoto/apps/deb-8.5/libframe-8.21/bin/FrChannels ' + files0[0] + ' > bruco.channels')
-    f = open('bruco.channels')
+    tmpfile = opt.channel + '-bruco.channels'
+    os.system('/users/tyamamoto/apps/deb-8.5/libframe-8.21/bin/FrChannels ' + files0[0] + ' > ' + tmpfile)
+    f = open(tmpfile)
     lines = f.readlines()
     channels = []
     sample_rate = []
@@ -56,7 +57,7 @@ def get_channel_list(opt, gpsb):
     channels = array(channels)
     sample_rate = array(sample_rate)
     # remove temporary channel list
-    os.system('rm bruco.channels')
+    os.system('rm -f ' + tmpfile)
     
     return channels, sample_rate
     
