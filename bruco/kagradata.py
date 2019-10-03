@@ -4,6 +4,7 @@
 #from glue import lal
 import os
 from pylal import frutils, Fr
+#from gwpy.timeseries import TimeSeries
 import subprocess
 from pylab import *
 import numpy
@@ -21,9 +22,7 @@ files = []
 
 # wrapper around the LIGO function to find where data is, returns a list of files
 def find_data_path(observatory, gpsb, gpse):
-    pref = os.getenv('GW_FRAME_DIR', '/frame0') + '/full'
-    if not os.path.exists(pref):
-        pref = '/data/full'
+    pref = '/frame0/full'
     flen = int(32)
     gstt = int(int(gpsb / flen) * flen)
     gstp = int(int((gpse-0.5) / flen) * flen)
@@ -43,24 +42,25 @@ def find_data_path(observatory, gpsb, gpse):
 # get the list of channels
 def get_channel_list(opt, gpsb):
     
-    files0 = find_data_path(opt.ifo, gpsb, gpsb+1) 
-    tmpfile = opt.channel + '-bruco.channels'
-    os.system('/users/tyamamoto/apps/deb-8.5/libframe-8.21/bin/FrChannels ' + files0[0] + ' > ' + tmpfile)
-    f = open(tmpfile)
+    files0 = find_data_path(opt.ifo, gpsb, gpsb+1)
+    os.system('/users/tyamamoto/apps/deb-8.5/libframe-8.21/bin/FrChannels ' + files0[0] + ' > bruco.channels')
+    f = open('bruco.channels')
     lines = f.readlines()
     channels = []
     sample_rate = []
     for l in lines:
         ll = l.split()
         if ll[0][1] != '0':
+            #print ll[0]
             # remove all L0/H0 channels
             channels.append(ll[0])
             sample_rate.append(int(ll[1]))
     channels = array(channels)
     sample_rate = array(sample_rate)
     # remove temporary channel list
-    os.system('rm -f ' + tmpfile)
-    
+    os.system('rm bruco.channels')
+    #print filter(lambda x:'OUT16' in x, channels)
+    #exit()
     return channels, sample_rate
     
 # Function to get data from raw files
@@ -102,7 +102,11 @@ def getRawData(channel, gps, dt):
         gps0 = max(gps0, gps)
 	gps1 = min(gps1, gps + dt)
 	# read data and append
+        #print(f,channel)
+        #exit()
 	x = Fr.frgetvect(f, channel, gps0, gps1-gps0)
+        #x = TimeSeries.read(f,channel,gps0,gps1-gps0)
+        #exit()
 	data = concatenate([data, x[0]])
     return data, int(1/x[3][0])
 
